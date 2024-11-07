@@ -75,6 +75,10 @@ class MYSQLDatabase {
             die("Update failed: " . $e->getMessage());
         }
     }
+    //prepare statement
+    public function prepare($query) {
+        return $this->connection->prepare($query);
+    }
 
     // Delete a record
     public function delete($sql, $params = []) {
@@ -86,5 +90,7 @@ class MYSQLDatabase {
         }
     }
 }
+
+
 
 ?>

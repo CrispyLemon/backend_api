@@ -4,9 +4,16 @@ require_once('database.php');
 // Create a new database instance
 $db = new MYSQLDatabase();
 
-// Fetch all cases
-//$query = "select c.Case_ID,c.next_hearing_date, c.status, j.Judge_ID, j.Judge_Name, h.date_of_hearing, court.court_id, court.court_type, court.location, P.License_Number as Plaintiff_Lawyer, PL.lawyer_name as Plaintiff_Lawyer_Name, D.License_Number as Defendant_Lawyer, DL.lawyer_name as Defendant_Lawyer_Name from cases c natural join judges j natural join hears h natural join hearings natural join court natural join converted_cases join assignments P join assignments D join lawyer PL join lawyer DL where (P.case_id = c.case_id and P.Party = 'Plaintiff') and (D.case_id = c.case_id and D.Party = 'Defendant') and (D.License_Number = DL.License_Number) and (P.License_Number = PL.License_Number);";
-$id = 6;
+// Check if 'id' parameter is present in the GET request
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    http_response_code(400); // Bad Request
+    echo json_encode(["error" => "ID is required."]);
+    exit();
+}
+
+$id = $_GET['id'];
+
+// Prepare the SQL query
 $query = "
 SELECT 
     c.Case_ID, 
@@ -52,11 +59,11 @@ FROM
     JOIN pertains_to ON pertains_to.case_id = c.Case_ID
     JOIN evidence ON pertains_to.ev_id = evidence.ev_id
 WHERE
-    c.Case_ID = %s;
+    c.Case_ID = ?;
 ";
 
-$query = sprintf($query, $id);
-$cases = $db->fetch_all($query);
+// Use a prepared statement to execute the query securely
+$cases = $db->fetch_all($query, [$id]);
 
 // Close the database connection
 $db->close_connection();
