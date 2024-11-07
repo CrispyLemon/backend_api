@@ -1,7 +1,7 @@
 <?php
 
 require_once('config.php');
-require_once('database.php');
+
 class MYSQLDatabase {
 
     private $connection;
@@ -20,17 +20,14 @@ class MYSQLDatabase {
             die("Database connection failed: " . $e->getMessage());
         }
     }
-     
-
-    $sql = "SELECT * FROM users";
-
 
     // Optionally, add a method to close the connection if needed
     public function close_connection() {
         $this->connection = null;
     }
 
-    // Add other database interaction methods here as needed
 }
 
 ?>
+
+
